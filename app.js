@@ -1,7 +1,7 @@
 import {
   auth, db, provider,
   signInWithPopup, signOut, onAuthStateChanged,
-  doc, collection, setDoc, deleteDoc, getDocs, onSnapshot
+  doc, collection, setDoc, deleteDoc, onSnapshot
 } from "./firebase.js";
 
 import {
@@ -27,6 +27,7 @@ let currentTheme = localStorage.getItem("moneyLogTheme") || "dark";
 let editingRecord = null;
 let entryType = "expense";
 let entryCategory = "식비";
+let selectedActionRecord = null;
 
 function ym() {
   return `${viewDate.getFullYear()}-${String(viewDate.getMonth() + 1).padStart(2, "0")}`;
@@ -80,6 +81,16 @@ function applyTheme() {
   localStorage.setItem("moneyLogTheme", currentTheme);
 }
 
+function updateAddButton() {
+  const addBtn = document.getElementById("addBtn");
+
+  if (!currentUser || currentTab === "calendar" || currentTab === "stats") {
+    addBtn.classList.add("hidden");
+  } else {
+    addBtn.classList.remove("hidden");
+  }
+}
+
 document.getElementById("themeBtn").addEventListener("click", () => {
   currentTheme = currentTheme === "dark" ? "light" : "dark";
   applyTheme();
@@ -109,9 +120,8 @@ onAuthStateChanged(auth, user => {
 
     document.getElementById("loginBox").classList.remove("hidden");
     document.getElementById("app").classList.add("hidden");
-    document.getElementById("addBtn").classList.add("hidden");
     document.getElementById("bottomNav").classList.add("hidden");
-
+    updateAddButton();
     return;
   }
 
@@ -120,9 +130,9 @@ onAuthStateChanged(auth, user => {
   document.getElementById("userEmail").textContent = user.email;
   document.getElementById("loginBox").classList.add("hidden");
   document.getElementById("app").classList.remove("hidden");
-  updateAddButton();
   document.getElementById("bottomNav").classList.remove("hidden");
 
+  updateAddButton();
   listenRecords();
 });
 
@@ -165,36 +175,17 @@ document.getElementById("nextMonth").addEventListener("click", () => {
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     currentTab = btn.dataset.tab;
-    updateAddButton();
 
     document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
 
     document.querySelectorAll(".screen").forEach(screen => screen.classList.remove("active"));
     document.getElementById(`${currentTab}Screen`).classList.add("active");
-    if (currentTab === "calendar" || currentTab === "stats") {
-      document.getElementById("addBtn").classList.add("hidden");
-    } else {
-      document.getElementById("addBtn").classList.remove("hidden");
-    }
 
-    render();
     updateAddButton();
+    render();
   });
 });
-
-function updateAddButton() {
-  const addBtn = document.getElementById("addBtn");
-
-  if (
-    currentTab === "calendar" ||
-    currentTab === "stats"
-  ) {
-    addBtn.style.display = "none";
-  } else {
-    addBtn.style.display = "flex";
-  }
-}
 
 document.getElementById("addBtn").addEventListener("click", () => {
   const type = ["income", "estate"].includes(currentTab) ? currentTab : "expense";
@@ -246,6 +237,7 @@ function renderEntryCategories() {
 document.getElementById("entryCategories").addEventListener("click", e => {
   const btn = e.target.closest(".category-chip");
   if (!btn) return;
+
   entryCategory = btn.dataset.category;
   renderEntryCategories();
 });
@@ -315,8 +307,6 @@ function renderRecordItem(r) {
   `;
 }
 
-let selectedActionRecord = null;
-
 document.addEventListener("click", e => {
   const btn = e.target.closest(".more-btn");
   if (!btn) return;
@@ -345,11 +335,29 @@ document.getElementById("actionOverlay").addEventListener("click", closeActionSh
 
 document.getElementById("actionEditBtn").addEventListener("click", () => {
   if (!selectedActionRecord) return;
+
   const record = selectedActionRecord;
   closeActionSheet();
   openEntrySheet(record.type, record);
 });
 
+document.getElementById("actionDeleteBtn").addEventListener("click", async () => {
+  if (!selectedActionRecord) return;
+
+  const record = selectedActionRecord;
+
+  if (!confirm(`"${record.memo || record.category}" 기록을 삭제할까요?`)) return;
+
+  try {
+    setSync("삭제 중...");
+    await deleteDoc(recordRef(record.id));
+    setSync("삭제 완료");
+    closeActionSheet();
+  } catch (error) {
+    setSync("삭제 실패");
+    alert("삭제 실패: " + error.message);
+  }
+});
 
 document.getElementById("rentBtn").addEventListener("click", async () => {
   const date = `${ym()}-06`;
@@ -435,6 +443,7 @@ function render() {
   renderList("estateList", "estate");
   renderCategoryStats();
   renderCalendar(records, viewDate);
+  updateAddButton();
 }
 
 applyTheme();
