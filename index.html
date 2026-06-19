@@ -1,103 +1,243 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Firebase 테스트</title>
-<style>
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
-  padding: 30px;
-  background: #f4f6fb;
-}
-button {
-  width: 100%;
-  padding: 18px;
-  border: 0;
-  border-radius: 18px;
-  background: #111827;
-  color: white;
-  font-size: 18px;
-  font-weight: 900;
-}
-.card {
-  margin-top: 20px;
-  background: white;
-  padding: 20px;
-  border-radius: 24px;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>머니로그</title>
+
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<h1>머니로그 Firebase 테스트</h1>
-<button id="loginBtn">Google 로그인</button>
+  <!-- 로그인 화면 -->
+  <div id="loginBox" class="login-box">
+    <h1>머니로그</h1>
 
-<div class="card">
-  <div id="status">로그인 전</div>
+    <p>
+      Google 계정으로 로그인하면<br>
+      모든 기기에서 자동 동기화됩니다.
+    </p>
+
+    <button id="loginBtn" class="login-btn">
+      Google 로그인
+    </button>
+  </div>
+
+  <!-- 앱 -->
+  <div id="app" class="app hidden">
+
+    <header class="top-header">
+
+      <div>
+        <div id="userEmail" class="user-email"></div>
+        <div id="syncStatus" class="sync-status">
+          동기화 준비 중...
+        </div>
+      </div>
+
+      <button id="logoutBtn" class="logout-btn">
+        로그아웃
+      </button>
+
+      <button id="themeBtn" class="theme-btn">
+        🌙
+      </button>
+
+    </header>
+
+    <!-- 월 이동 -->
+    <section class="month-bar">
+
+      <button id="prevMonth">
+        ◀
+      </button>
+
+      <div id="monthLabel">
+        2026년 6월
+      </div>
+
+      <button id="nextMonth">
+        ▶
+      </button>
+
+    </section>
+
+    <!-- 탭 -->
+
+    <nav class="bottom-nav">
+
+      <button class="tab-btn active" data-tab="expense">
+        지출
+      </button>
+
+      <button class="tab-btn" data-tab="income">
+        수입
+      </button>
+
+      <button class="tab-btn" data-tab="estate">
+        부동산
+      </button>
+
+      <button class="tab-btn" data-tab="calendar">
+        달력
+      </button>
+
+      <button class="tab-btn" data-tab="stats">
+        통계
+      </button>
+
+    </nav>
+
+    <!-- 지출 -->
+
+    <section id="expenseScreen" class="screen active">
+
+      <h2>지출</h2>
+
+      <div id="expenseTotal" class="big-money">
+        0원
+      </div>
+
+      <div id="expenseList" class="card">
+      </div>
+
+    </section>
+
+    <!-- 수입 -->
+
+    <section id="incomeScreen" class="screen">
+
+      <h2>수입</h2>
+
+      <div id="incomeTotal" class="big-money">
+        0원
+      </div>
+
+      <div id="incomeList" class="card">
+      </div>
+
+    </section>
+
+    <!-- 부동산 -->
+
+    <section id="estateScreen" class="screen">
+
+      <h2>부동산</h2>
+
+      <div id="estateTotal" class="big-money">
+        0원
+      </div>
+
+      <div class="card">
+
+        <button id="rentBtn" class="rent-btn">
+          이번 달 월세 자동 생성
+        </button>
+
+      </div>
+
+      <div id="estateList" class="card">
+      </div>
+
+    </section>
+
+    <!-- 달력 -->
+
+    <section id="calendarScreen" class="screen">
+
+      <h2>달력</h2>
+
+      <div class="card">
+
+        <div id="calendarGrid"></div>
+
+      </div>
+
+      <div class="card">
+
+        <div id="selectedDateTitle">
+          날짜를 선택하세요
+        </div>
+
+        <div id="selectedDateList">
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- 통계 -->
+
+    <section id="statsScreen" class="screen">
+
+      <h2>통계</h2>
+
+      <div class="card">
+
+        <div class="stat-row">
+          <span>지출</span>
+          <strong id="statExpense">0원</strong>
+        </div>
+
+        <div class="stat-row">
+          <span>수입</span>
+          <strong id="statIncome">0원</strong>
+        </div>
+
+        <div class="stat-row">
+          <span>부동산</span>
+          <strong id="statEstate">0원</strong>
+        </div>
+
+        <div class="stat-row">
+          <span>남은 금액</span>
+          <strong id="statRemain">0원</strong>
+        </div>
+
+      </div>
+
+      <div id="categoryStats" class="card">
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- 추가 버튼 -->
+
+  <button id="addBtn" class="fab hidden">
+    +
+  </button>
+
+  <!-- Firebase -->
+
+  <script type="module" src="firebase.js"></script>
+
+  <!-- 달력 -->
+
+  <script type="module" src="calendar.js"></script>
+
+  <!-- 앱 -->
+
+  <script type="module" src="app.js"></script>
+
+  <div id="entryOverlay" class="entry-overlay hidden"></div>
+
+<div id="entrySheet" class="entry-sheet hidden">
+  <div class="sheet-handle"></div>
+
+  <h3 id="entryTitle">지출 입력</h3>
+
+  <input id="entryDate" type="date">
+  <input id="entryAmount" type="number" placeholder="금액" inputmode="numeric">
+
+  <div id="entryCategories" class="category-grid"></div>
+
+  <input id="entryMemo" type="text" placeholder="메모">
+
+  <button id="entrySaveBtn" class="entry-save">저장</button>
+  <button id="entryCancelBtn" class="entry-cancel">취소</button>
 </div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-
-import {
-  getFirestore,
-  doc,
-  setDoc,
-  getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCSVIFQy4izTG62HelbHNGh7MaV_gpdNHM",
-  authDomain: "money-log-f1bfc.firebaseapp.com",
-  projectId: "money-log-f1bfc",
-  storageBucket: "money-log-f1bfc.firebasestorage.app",
-  messagingSenderId: "212358025563",
-  appId: "1:212358025563:web:e03df1f2d75a58f4144a7e"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const provider = new GoogleAuthProvider();
-
-document.getElementById("loginBtn").onclick = async () => {
-  try {
-    await signInWithPopup(auth, provider);
-  } catch (err) {
-    document.getElementById("status").innerText = "로그인 실패: " + err.message;
-  }
-};
-
-onAuthStateChanged(auth, async user => {
-  if (!user) {
-    document.getElementById("status").innerText = "로그인 전";
-    return;
-  }
-
-  document.getElementById("status").innerText =
-    "로그인 성공: " + user.email + "\nFirestore 저장 테스트 중...";
-
-  const ref = doc(db, "users", user.uid, "test", "connection");
-
-  await setDoc(ref, {
-    message: "Firebase 연결 성공",
-    email: user.email,
-    time: new Date().toISOString()
-  });
-
-  const snap = await getDoc(ref);
-
-  document.getElementById("status").innerText =
-    "로그인 성공: " + user.email + "\nFirestore 저장 성공\n" + JSON.stringify(snap.data(), null, 2);
-});
-</script>
-
 </body>
 </html>
