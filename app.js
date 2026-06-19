@@ -230,7 +230,7 @@ document.getElementById("entryCategories").addEventListener("click", e => {
   renderEntryCategories();
 });
 
-document.getElementById("entryCancelBtn").addEventListener("click", closeEntrySheet);
+document.getElementById("entryCloseBtn").addEventListener("click", closeEntrySheet);
 document.getElementById("entryOverlay").addEventListener("click", closeEntrySheet);
 
 document.getElementById("entrySaveBtn").addEventListener("click", async () => {

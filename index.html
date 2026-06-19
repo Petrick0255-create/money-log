@@ -103,17 +103,26 @@
 
 <div id="entrySheet" class="entry-sheet hidden">
   <div class="sheet-handle"></div>
-  <h3 id="entryTitle">지출 입력</h3>
 
-  <input id="entryDate" type="date" />
-  <input id="entryAmount" type="number" placeholder="금액" inputmode="numeric" />
+  <div class="entry-head">
+    <h3 id="entryTitle">지출 입력</h3>
+    <button id="entryCloseBtn" class="entry-close">×</button>
+  </div>
+
+  <div class="amount-wrap">
+    <span>₩</span>
+    <input id="entryAmount" class="amount-input" type="number" placeholder="0" inputmode="numeric" />
+  </div>
 
   <div id="entryCategories" class="category-grid"></div>
 
-  <input id="entryMemo" type="text" placeholder="메모" />
+  <label class="field-label">날짜</label>
+  <input id="entryDate" class="soft-input" type="date" />
 
-  <button id="entrySaveBtn" class="entry-save">저장</button>
-  <button id="entryCancelBtn" class="entry-cancel">취소</button>
+  <label class="field-label">메모</label>
+  <input id="entryMemo" class="soft-input" type="text" placeholder="예: 점심 순대국" />
+
+  <button id="entrySaveBtn" class="entry-save">기록 저장하기</button>
 </div>
 
 <script type="module" src="firebase.js"></script>
