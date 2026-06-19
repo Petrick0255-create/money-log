@@ -393,8 +393,10 @@ body.light .bottom-nav {
 
 #calendarGrid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 7px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 5px;
+  width: 100%;
+  overflow: hidden;
 }
 
 .day-name {
@@ -406,16 +408,18 @@ body.light .bottom-nav {
 }
 
 .calendar-day {
-  min-height: 58px;
+  min-width: 0;
+  min-height: 54px;
   border: 1px solid var(--line);
   background: rgba(255,255,255,0.06);
   color: var(--text);
-  border-radius: 16px;
-  padding: 7px 5px;
+  border-radius: 14px;
+  padding: 6px 3px;
   text-align: left;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  overflow: hidden;
 }
 
 .calendar-day.blank {
@@ -433,14 +437,17 @@ body.light .bottom-nav {
 }
 
 .day-num {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 950;
 }
 
 .day-money {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 950;
   color: var(--red);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .day-income {
