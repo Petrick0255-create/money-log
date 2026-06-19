@@ -303,23 +303,24 @@ document.addEventListener("click", async e => {
   const record = records.find(r => Number(r.id) === id);
   if (!record) return;
 
-  const action = prompt("무엇을 할까요?\n1. 수정\n2. 삭제", "1");
+  const action = confirm(
+    `${record.memo || record.category}\n\n확인: 수정\n취소: 삭제`
+  );
 
-  if (action === "1") {
+  if (action) {
     openEntrySheet(record.type, record);
+    return;
   }
 
-  if (action === "2") {
-    if (!confirm(`"${record.memo || record.category}" 기록을 삭제할까요?`)) return;
+  if (!confirm(`"${record.memo || record.category}" 기록을 삭제할까요?`)) return;
 
-    try {
-      setSync("삭제 중...");
-      await deleteDoc(recordRef(record.id));
-      setSync("삭제 완료");
-    } catch (error) {
-      setSync("삭제 실패");
-      alert("삭제 실패: " + error.message);
-    }
+  try {
+    setSync("삭제 중...");
+    await deleteDoc(recordRef(record.id));
+    setSync("삭제 완료");
+  } catch (error) {
+    setSync("삭제 실패");
+    alert("삭제 실패: " + error.message);
   }
 });
 
