@@ -391,12 +391,18 @@ body.light .bottom-nav {
 
 /* 달력 */
 
-#calendarGrid {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 5px;
-  width: 100%;
-  overflow: hidden;
+#calendarGrid{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:6px;
+    width:100%;
+}
+
+.calendar-day{
+    width:100%;
+    aspect-ratio:1 / 1.2;
+    min-width:0;
+    overflow:hidden;
 }
 
 .day-name {
@@ -620,10 +626,12 @@ body.light .sheet-handle {
 /* 모바일 보정 */
 
 @media (max-width: 480px) {
-  .app {
-    padding-left: 18px;
-    padding-right: 18px;
-  }
+  .app{
+   padding:
+   calc(14px + env(safe-area-inset-top))
+   18px
+   180px;
+}
 
   .page-title {
     font-size: 36px;

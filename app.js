@@ -330,23 +330,6 @@ document.getElementById("actionEditBtn").addEventListener("click", () => {
   openEntrySheet(record.type, record);
 });
 
-document.getElementById("actionDeleteBtn").addEventListener("click", async () => {
-  if (!selectedActionRecord) return;
-
-  const record = selectedActionRecord;
-
-  if (!confirm(`"${record.memo || record.category}" 기록을 삭제할까요?`)) return;
-
-  try {
-    setSync("삭제 중...");
-    await deleteDoc(recordRef(record.id));
-    setSync("삭제 완료");
-    closeActionSheet();
-  } catch (error) {
-    setSync("삭제 실패");
-    alert("삭제 실패: " + error.message);
-  }
-});
 
 document.getElementById("rentBtn").addEventListener("click", async () => {
   const date = `${ym()}-06`;
