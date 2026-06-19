@@ -1,21 +1,11 @@
 import {
-  auth,
-  db,
-  provider,
-  signInWithPopup,
-  signOut,
-  onAuthStateChanged,
-  doc,
-  collection,
-  setDoc,
-  deleteDoc,
-  getDocs,
-  onSnapshot
+  auth, db, provider,
+  signInWithPopup, signOut, onAuthStateChanged,
+  doc, collection, setDoc, deleteDoc, getDocs, onSnapshot
 } from "./firebase.js";
 
 import {
   renderCalendar,
-  renderSelectedDate,
   selectedCalendarDate
 } from "./calendar.js";
 
@@ -28,27 +18,15 @@ const categories = {
 let currentUser = null;
 let records = [];
 let unsubscribeRecords = null;
-
 let currentTab = "expense";
 let viewDate = new Date();
 viewDate.setDate(1);
 
 let currentTheme = localStorage.getItem("moneyLogTheme") || "dark";
 
-function applyTheme() {
-  const btn = document.getElementById("themeBtn");
-  if (!btn) return;
-
-  if (currentTheme === "light") {
-    document.body.classList.add("light");
-    btn.textContent = "☀️";
-  } else {
-    document.body.classList.remove("light");
-    btn.textContent = "🌙";
-  }
-
-  localStorage.setItem("moneyLogTheme", currentTheme);
-}
+let editingRecord = null;
+let entryType = "expense";
+let entryCategory = "식비";
 
 function ym() {
   return `${viewDate.getFullYear()}-${String(viewDate.getMonth() + 1).padStart(2, "0")}`;
@@ -88,6 +66,25 @@ function typeLabel(type) {
   return "부동산";
 }
 
+function applyTheme() {
+  const btn = document.getElementById("themeBtn");
+
+  if (currentTheme === "light") {
+    document.body.classList.add("light");
+    btn.textContent = "☀️";
+  } else {
+    document.body.classList.remove("light");
+    btn.textContent = "🌙";
+  }
+
+  localStorage.setItem("moneyLogTheme", currentTheme);
+}
+
+document.getElementById("themeBtn").addEventListener("click", () => {
+  currentTheme = currentTheme === "dark" ? "light" : "dark";
+  applyTheme();
+});
+
 document.getElementById("loginBtn").addEventListener("click", async () => {
   try {
     await signInWithPopup(auth, provider);
@@ -98,11 +95,6 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
 
 document.getElementById("logoutBtn").addEventListener("click", async () => {
   await signOut(auth);
-});
-
-document.getElementById("themeBtn").addEventListener("click", () => {
-  currentTheme = currentTheme === "dark" ? "light" : "dark";
-  applyTheme();
 });
 
 onAuthStateChanged(auth, user => {
@@ -118,6 +110,7 @@ onAuthStateChanged(auth, user => {
     document.getElementById("loginBox").classList.remove("hidden");
     document.getElementById("app").classList.add("hidden");
     document.getElementById("addBtn").classList.add("hidden");
+    document.getElementById("bottomNav").classList.add("hidden");
 
     return;
   }
@@ -128,6 +121,7 @@ onAuthStateChanged(auth, user => {
   document.getElementById("loginBox").classList.add("hidden");
   document.getElementById("app").classList.remove("hidden");
   document.getElementById("addBtn").classList.remove("hidden");
+  document.getElementById("bottomNav").classList.remove("hidden");
 
   listenRecords();
 });
@@ -135,14 +129,12 @@ onAuthStateChanged(auth, user => {
 function listenRecords() {
   setSync("Firebase 연결 중...");
 
-  if (unsubscribeRecords) {
-    unsubscribeRecords();
-  }
+  if (unsubscribeRecords) unsubscribeRecords();
 
   unsubscribeRecords = onSnapshot(
     recordsCol(),
     snapshot => {
-      records = snapshot.docs.map(doc => doc.data());
+      records = snapshot.docs.map(d => d.data());
 
       records.sort((a, b) => {
         const dateDiff = String(b.date).localeCompare(String(a.date));
@@ -186,14 +178,10 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 
 document.getElementById("addBtn").addEventListener("click", () => {
   const type = ["income", "estate"].includes(currentTab) ? currentTab : "expense";
-  openInputDialog(type);
+  openEntrySheet(type);
 });
 
-let editingRecord = null;
-let entryType = "expense";
-let entryCategory = "식비";
-
-function openInputDialog(type, record = null) {
+function openEntrySheet(type, record = null) {
   editingRecord = record;
   entryType = type;
   entryCategory = record?.category || categories[type][0];
@@ -214,11 +202,16 @@ function openInputDialog(type, record = null) {
 
   document.getElementById("entryOverlay").classList.remove("hidden");
   document.getElementById("entrySheet").classList.remove("hidden");
+
+  setTimeout(() => {
+    document.getElementById("entryAmount").focus();
+  }, 200);
 }
 
 function closeEntrySheet() {
   document.getElementById("entryOverlay").classList.add("hidden");
   document.getElementById("entrySheet").classList.add("hidden");
+  editingRecord = null;
 }
 
 function renderEntryCategories() {
@@ -233,7 +226,6 @@ function renderEntryCategories() {
 document.getElementById("entryCategories").addEventListener("click", e => {
   const btn = e.target.closest(".category-chip");
   if (!btn) return;
-
   entryCategory = btn.dataset.category;
   renderEntryCategories();
 });
@@ -298,9 +290,7 @@ function renderRecordItem(r) {
         ${sign}${money(r.amount)}
       </div>
 
-      <button class="more-btn" data-id="${r.id}">
-        ⋯
-      </button>
+      <button class="more-btn" data-id="${r.id}">⋯</button>
     </div>
   `;
 }
@@ -311,13 +301,12 @@ document.addEventListener("click", async e => {
 
   const id = Number(btn.dataset.id);
   const record = records.find(r => Number(r.id) === id);
-
   if (!record) return;
 
   const action = prompt("무엇을 할까요?\n1. 수정\n2. 삭제", "1");
 
   if (action === "1") {
-    openInputDialog(record.type, record);
+    openEntrySheet(record.type, record);
   }
 
   if (action === "2") {
@@ -335,8 +324,6 @@ document.addEventListener("click", async e => {
 });
 
 document.getElementById("rentBtn").addEventListener("click", async () => {
-  if (!currentUser) return alert("로그인이 필요합니다.");
-
   const date = `${ym()}-06`;
 
   const exists = records.some(r =>
@@ -377,7 +364,6 @@ document.getElementById("rentBtn").addEventListener("click", async () => {
 
 function renderCategoryStats() {
   const target = document.getElementById("categoryStats");
-
   const map = {};
 
   monthRecords("expense").forEach(r => {
@@ -399,28 +385,6 @@ function renderCategoryStats() {
   `).join("");
 }
 
-async function clearAllData() {
-  if (!confirm("정말 전체 기록을 삭제할까요?")) return;
-  if (!confirm("Firebase 기록도 전부 삭제됩니다. 되돌릴 수 없습니다.")) return;
-
-  try {
-    setSync("전체 삭제 중...");
-
-    const snapshot = await getDocs(recordsCol());
-
-    for (const d of snapshot.docs) {
-      await deleteDoc(d.ref);
-    }
-
-    setSync("전체 삭제 완료");
-  } catch (error) {
-    alert("전체 삭제 실패: " + error.message);
-    setSync("삭제 실패");
-  }
-}
-
-window.clearAllData = clearAllData;
-
 function render() {
   const e = total("expense");
   const i = total("income");
@@ -441,11 +405,8 @@ function render() {
   renderList("expenseList", "expense");
   renderList("incomeList", "income");
   renderList("estateList", "estate");
-
   renderCategoryStats();
-
   renderCalendar(records, viewDate);
-  renderSelectedDate(records);
 }
 
 applyTheme();

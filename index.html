@@ -1,243 +1,124 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>머니로그</title>
-
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
-  <!-- 로그인 화면 -->
-  <div id="loginBox" class="login-box">
+<div id="loginBox" class="login-box">
+  <div class="login-card">
     <h1>머니로그</h1>
-
-    <p>
-      Google 계정으로 로그인하면<br>
-      모든 기기에서 자동 동기화됩니다.
-    </p>
-
-    <button id="loginBtn" class="login-btn">
-      Google 로그인
-    </button>
+    <p>Google 계정으로 로그인하면<br>모든 기기에서 자동 동기화됩니다.</p>
+    <button id="loginBtn" class="login-btn">Google 로그인</button>
   </div>
+</div>
 
-  <!-- 앱 -->
-  <div id="app" class="app hidden">
+<div id="app" class="app hidden">
 
-    <header class="top-header">
+  <header class="top-header">
+    <div class="user-info">
+      <div id="userEmail" class="user-email"></div>
+      <div id="syncStatus" class="sync-status">동기화 준비 중...</div>
+    </div>
 
-      <div>
-        <div id="userEmail" class="user-email"></div>
-        <div id="syncStatus" class="sync-status">
-          동기화 준비 중...
-        </div>
-      </div>
+    <div class="header-actions">
+      <button id="themeBtn" class="icon-btn">🌙</button>
+      <button id="logoutBtn" class="logout-btn">로그아웃</button>
+    </div>
+  </header>
 
-      <button id="logoutBtn" class="logout-btn">
-        로그아웃
-      </button>
+  <section class="month-bar">
+    <button id="prevMonth" class="circle-btn">‹</button>
+    <div id="monthLabel" class="month-label">2026년 6월</div>
+    <button id="nextMonth" class="circle-btn">›</button>
+  </section>
 
-      <button id="themeBtn" class="theme-btn">
-        🌙
-      </button>
-
-    </header>
-
-    <!-- 월 이동 -->
-    <section class="month-bar">
-
-      <button id="prevMonth">
-        ◀
-      </button>
-
-      <div id="monthLabel">
-        2026년 6월
-      </div>
-
-      <button id="nextMonth">
-        ▶
-      </button>
-
-    </section>
-
-    <!-- 탭 -->
-
-    <nav class="bottom-nav">
-
-      <button class="tab-btn active" data-tab="expense">
-        지출
-      </button>
-
-      <button class="tab-btn" data-tab="income">
-        수입
-      </button>
-
-      <button class="tab-btn" data-tab="estate">
-        부동산
-      </button>
-
-      <button class="tab-btn" data-tab="calendar">
-        달력
-      </button>
-
-      <button class="tab-btn" data-tab="stats">
-        통계
-      </button>
-
-    </nav>
-
-    <!-- 지출 -->
-
+  <main>
     <section id="expenseScreen" class="screen active">
-
-      <h2>지출</h2>
-
-      <div id="expenseTotal" class="big-money">
-        0원
-      </div>
-
-      <div id="expenseList" class="card">
-      </div>
-
+      <div class="page-title">지출</div>
+      <div id="expenseTotal" class="big-money">0원</div>
+      <div id="expenseList" class="card"></div>
     </section>
-
-    <!-- 수입 -->
 
     <section id="incomeScreen" class="screen">
-
-      <h2>수입</h2>
-
-      <div id="incomeTotal" class="big-money">
-        0원
-      </div>
-
-      <div id="incomeList" class="card">
-      </div>
-
+      <div class="page-title">수입</div>
+      <div id="incomeTotal" class="big-money">0원</div>
+      <div id="incomeList" class="card"></div>
     </section>
-
-    <!-- 부동산 -->
 
     <section id="estateScreen" class="screen">
-
-      <h2>부동산</h2>
-
-      <div id="estateTotal" class="big-money">
-        0원
-      </div>
+      <div class="page-title">부동산</div>
+      <div id="estateTotal" class="big-money">0원</div>
 
       <div class="card">
-
-        <button id="rentBtn" class="rent-btn">
-          이번 달 월세 자동 생성
-        </button>
-
+        <button id="rentBtn" class="rent-btn">이번 달 월세 자동 생성</button>
       </div>
 
-      <div id="estateList" class="card">
-      </div>
-
+      <div id="estateList" class="card"></div>
     </section>
-
-    <!-- 달력 -->
 
     <section id="calendarScreen" class="screen">
-
-      <h2>달력</h2>
+      <div class="page-title">달력</div>
 
       <div class="card">
-
         <div id="calendarGrid"></div>
-
       </div>
 
       <div class="card">
-
-        <div id="selectedDateTitle">
-          날짜를 선택하세요
-        </div>
-
-        <div id="selectedDateList">
-        </div>
-
+        <div id="selectedDateTitle" class="card-title">날짜를 선택하세요</div>
+        <div id="selectedDateList"></div>
       </div>
-
     </section>
-
-    <!-- 통계 -->
 
     <section id="statsScreen" class="screen">
-
-      <h2>통계</h2>
+      <div class="page-title">통계</div>
 
       <div class="card">
-
-        <div class="stat-row">
-          <span>지출</span>
-          <strong id="statExpense">0원</strong>
-        </div>
-
-        <div class="stat-row">
-          <span>수입</span>
-          <strong id="statIncome">0원</strong>
-        </div>
-
-        <div class="stat-row">
-          <span>부동산</span>
-          <strong id="statEstate">0원</strong>
-        </div>
-
-        <div class="stat-row">
-          <span>남은 금액</span>
-          <strong id="statRemain">0원</strong>
-        </div>
-
+        <div class="stat-row"><span>지출</span><strong id="statExpense">0원</strong></div>
+        <div class="stat-row"><span>수입</span><strong id="statIncome">0원</strong></div>
+        <div class="stat-row"><span>부동산</span><strong id="statEstate">0원</strong></div>
+        <div class="stat-row"><span>남은 금액</span><strong id="statRemain">0원</strong></div>
       </div>
 
-      <div id="categoryStats" class="card">
-      </div>
-
+      <div id="categoryStats" class="card"></div>
     </section>
+  </main>
+</div>
 
-  </div>
+<button id="addBtn" class="fab hidden">+</button>
 
-  <!-- 추가 버튼 -->
+<nav id="bottomNav" class="bottom-nav hidden">
+  <button class="tab-btn active" data-tab="expense"><span>💸</span><em>지출</em></button>
+  <button class="tab-btn" data-tab="income"><span>💰</span><em>수입</em></button>
+  <button class="tab-btn" data-tab="estate"><span>🏢</span><em>부동산</em></button>
+  <button class="tab-btn" data-tab="calendar"><span>📅</span><em>달력</em></button>
+  <button class="tab-btn" data-tab="stats"><span>📊</span><em>통계</em></button>
+</nav>
 
-  <button id="addBtn" class="fab hidden">
-    +
-  </button>
-
-  <!-- Firebase -->
-
-  <script type="module" src="firebase.js"></script>
-
-  <!-- 달력 -->
-
-  <script type="module" src="calendar.js"></script>
-
-  <!-- 앱 -->
-
-  <script type="module" src="app.js"></script>
-
-  <div id="entryOverlay" class="entry-overlay hidden"></div>
+<div id="entryOverlay" class="entry-overlay hidden"></div>
 
 <div id="entrySheet" class="entry-sheet hidden">
   <div class="sheet-handle"></div>
-
   <h3 id="entryTitle">지출 입력</h3>
 
-  <input id="entryDate" type="date">
-  <input id="entryAmount" type="number" placeholder="금액" inputmode="numeric">
+  <input id="entryDate" type="date" />
+  <input id="entryAmount" type="number" placeholder="금액" inputmode="numeric" />
 
   <div id="entryCategories" class="category-grid"></div>
 
-  <input id="entryMemo" type="text" placeholder="메모">
+  <input id="entryMemo" type="text" placeholder="메모" />
 
   <button id="entrySaveBtn" class="entry-save">저장</button>
   <button id="entryCancelBtn" class="entry-cancel">취소</button>
 </div>
+
+<script type="module" src="firebase.js"></script>
+<script type="module" src="calendar.js"></script>
+<script type="module" src="app.js"></script>
+
 </body>
 </html>
