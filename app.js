@@ -120,7 +120,7 @@ onAuthStateChanged(auth, user => {
   document.getElementById("userEmail").textContent = user.email;
   document.getElementById("loginBox").classList.add("hidden");
   document.getElementById("app").classList.remove("hidden");
-  document.getElementById("addBtn").classList.remove("hidden");
+  updateAddButton();
   document.getElementById("bottomNav").classList.remove("hidden");
 
   listenRecords();
@@ -165,6 +165,7 @@ document.getElementById("nextMonth").addEventListener("click", () => {
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     currentTab = btn.dataset.tab;
+    updateAddButton();
 
     document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
@@ -176,10 +177,24 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     } else {
       document.getElementById("addBtn").classList.remove("hidden");
     }
-    
+
     render();
+    updateAddButton();
   });
 });
+
+function updateAddButton() {
+  const addBtn = document.getElementById("addBtn");
+
+  if (
+    currentTab === "calendar" ||
+    currentTab === "stats"
+  ) {
+    addBtn.style.display = "none";
+  } else {
+    addBtn.style.display = "flex";
+  }
+}
 
 document.getElementById("addBtn").addEventListener("click", () => {
   const type = ["income", "estate"].includes(currentTab) ? currentTab : "expense";
