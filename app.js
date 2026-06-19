@@ -171,7 +171,12 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 
     document.querySelectorAll(".screen").forEach(screen => screen.classList.remove("active"));
     document.getElementById(`${currentTab}Screen`).classList.add("active");
-
+    if (currentTab === "calendar" || currentTab === "stats") {
+      document.getElementById("addBtn").classList.add("hidden");
+    } else {
+      document.getElementById("addBtn").classList.remove("hidden");
+    }
+    
     render();
   });
 });
