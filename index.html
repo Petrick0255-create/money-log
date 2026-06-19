@@ -1,587 +1,102 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>머니로그</title>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Firebase 테스트</title>
 <style>
-* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-:root {
-  --bg:#f4f6fb; --card:#fff; --text:#111827; --sub:#8b95a1;
-  --line:#eef1f5; --blue:#3182f6; --red:#ef4444; --green:#10b981;
-}
 body {
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Segoe UI",sans-serif;
-  background:var(--bg); color:var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  padding: 30px;
+  background: #f4f6fb;
 }
-.app { max-width:480px; margin:0 auto; min-height:100vh; padding:18px 18px 100px; }
-
-.month-control { display:flex; align-items:center; justify-content:space-between; margin:10px 0 12px; }
-.month-btn {
-  border:0; background:white; width:42px; height:42px; border-radius:50%;
-  font-size:20px; font-weight:900; box-shadow:0 6px 18px rgba(17,24,39,.06);
+button {
+  width: 100%;
+  padding: 18px;
+  border: 0;
+  border-radius: 18px;
+  background: #111827;
+  color: white;
+  font-size: 18px;
+  font-weight: 900;
 }
-.month-label { font-size:17px; font-weight:950; }
-
-.title { margin-top:8px; font-size:30px; font-weight:900; letter-spacing:-.8px; }
-.money { margin-top:8px; font-size:38px; font-weight:900; letter-spacing:-1.2px; }
-
 .card {
-  background:var(--card); border-radius:28px; padding:20px; margin-top:18px;
-  box-shadow:0 10px 30px rgba(17,24,39,.06);
-}
-.card-title { font-size:18px; font-weight:900; margin-bottom:16px; }
-
-.quick-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
-.quick {
-  border:0; background:#f2f4f7; border-radius:18px; padding:13px 6px;
-  font-weight:800; color:#374151;
-}
-
-.list-item {
-  display:grid; grid-template-columns:1fr auto auto; align-items:center;
-  gap:10px; padding:15px 0; border-bottom:1px solid var(--line);
-}
-.list-item:last-child { border-bottom:0; }
-.item-main { font-size:16px; font-weight:850; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.item-sub { margin-top:4px; color:var(--sub); font-size:13px; }
-.item-money { font-size:16px; font-weight:900; white-space:nowrap; }
-.minus { color:var(--red); } .plus { color:var(--green); }
-
-.more-btn {
-  border:0; background:#f2f4f7; color:#6b7280;
-  border-radius:14px; width:34px; height:34px; font-size:20px; font-weight:900;
-}
-
-.empty { color:var(--sub); text-align:center; padding:28px 0; font-size:14px; }
-
-.bottom-nav {
-  position:fixed; left:50%; bottom:14px; transform:translateX(-50%);
-  width:calc(100% - 28px); max-width:452px; background:rgba(255,255,255,.92);
-  backdrop-filter:blur(16px); border-radius:26px; padding:8px;
-  display:grid; grid-template-columns:repeat(4,1fr);
-  box-shadow:0 12px 36px rgba(17,24,39,.16); z-index:20;
-}
-.nav-btn {
-  border:0; background:transparent; padding:11px 0; border-radius:20px;
-  font-weight:900; color:var(--sub);
-}
-.nav-btn.active { background:#111827; color:white; }
-
-.fab {
-  position:fixed; right:22px; bottom:92px; width:62px; height:62px;
-  border-radius:50%; border:0; background:#111827; color:white; font-size:34px;
-  box-shadow:0 14px 28px rgba(17,24,39,.25); z-index:25;
-}
-.screen { display:none; animation:fade .22s ease; }
-.screen.active { display:block; }
-@keyframes fade { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-
-.sheet-bg {
-  position:fixed; inset:0; background:rgba(0,0,0,.32);
-  opacity:0; pointer-events:none; transition:.25s ease; z-index:40;
-}
-.sheet-bg.show { opacity:1; pointer-events:auto; }
-
-.sheet {
-  position:fixed; left:50%; bottom:0; transform:translateX(-50%) translateY(105%);
-  width:100%; max-width:480px; background:white; border-radius:30px 30px 0 0;
-  padding:16px 18px 28px; z-index:50;
-  transition:.32s cubic-bezier(.2,.9,.2,1);
-}
-.sheet.show { transform:translateX(-50%) translateY(0); }
-.handle { width:44px; height:5px; border-radius:99px; background:#d1d5db; margin:0 auto 18px; }
-.form-title { font-size:22px; font-weight:950; margin-bottom:18px; }
-
-.type-row { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px; }
-.type-btn {
-  border:0; background:#f2f4f7; border-radius:18px; padding:13px 0;
-  font-weight:900; color:#6b7280;
-}
-.type-btn.active { background:#111827; color:white; }
-
-input {
-  width:100%; border:0; outline:0; background:#f3f4f6; border-radius:20px;
-  padding:17px; font-size:18px; font-weight:800; margin-bottom:12px;
-}
-.memo { font-size:16px; font-weight:600; }
-
-.select { position:relative; margin-bottom:12px; }
-.select-head {
-  background:#f3f4f6; border-radius:20px; padding:17px;
-  display:flex; justify-content:space-between; font-size:17px; font-weight:850;
-}
-.chev { transition:.25s; } .select.open .chev { transform:rotate(180deg); }
-.options {
-  max-height:0; overflow:hidden; opacity:0;
-  transition:max-height .32s ease, opacity .24s ease, margin .24s ease;
-  background:white; border-radius:22px; box-shadow:0 12px 28px rgba(17,24,39,.10);
-}
-.select.open .options { max-height:260px; opacity:1; margin-top:8px; }
-.option { padding:15px 17px; font-weight:800; border-bottom:1px solid #f3f4f6; }
-
-.save {
-  width:100%; border:0; background:var(--blue); color:white; border-radius:22px;
-  padding:17px; font-size:17px; font-weight:950; margin-top:4px;
-}
-.cancel-edit {
-  width:100%; border:0; background:#f2f4f7; color:#374151; border-radius:22px;
-  padding:15px; font-size:16px; font-weight:900; margin-top:10px; display:none;
-}
-
-.stat-row { display:flex; justify-content:space-between; padding:13px 0; border-bottom:1px solid var(--line); }
-.stat-row:last-child { border-bottom:0; }
-.stat-row span { color:var(--sub); font-weight:800; }
-.stat-row strong { font-weight:950; }
-
-.setting-btn {
-  width:100%; border:0; background:#f2f4f7; color:#111827; border-radius:20px;
-  padding:16px; font-size:16px; font-weight:900; margin-bottom:10px;
-}
-.danger { background:#fee2e2; color:#b91c1c; }
-
-.action-sheet {
-  position:fixed; left:50%; bottom:0; transform:translateX(-50%) translateY(105%);
-  width:100%; max-width:480px; background:white; border-radius:30px 30px 0 0;
-  padding:18px; z-index:60; transition:.28s cubic-bezier(.2,.9,.2,1);
-}
-.action-sheet.show { transform:translateX(-50%) translateY(0); }
-.action-title { font-size:18px; font-weight:950; margin-bottom:14px; }
-.action-btn {
-  width:100%; border:0; background:#f2f4f7; border-radius:20px;
-  padding:16px; font-size:16px; font-weight:900; margin-bottom:10px;
+  margin-top: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 24px;
 }
 </style>
 </head>
-
 <body>
 
-<div class="app">
-  <div class="month-control">
-    <button class="month-btn" onclick="moveMonth(-1)">‹</button>
-    <div class="month-label" id="monthLabel"></div>
-    <button class="month-btn" onclick="moveMonth(1)">›</button>
-  </div>
+<h1>머니로그 Firebase 테스트</h1>
+<button id="loginBtn">Google 로그인</button>
 
-  <section id="expenseScreen" class="screen active">
-    <div class="title">지출</div>
-    <div class="money" id="expenseTotal">0원</div>
-    <div class="card"><div class="card-title">빠른 분류</div><div class="quick-grid" id="quickGrid"></div></div>
-    <div class="card"><div class="card-title">최근 지출</div><div id="expenseList" class="empty">아직 기록이 없습니다.</div></div>
-  </section>
-
-  <section id="incomeScreen" class="screen">
-    <div class="title">수입</div>
-    <div class="money" id="incomeTotal">0원</div>
-    <div class="card"><div class="card-title">수입 내역</div><div id="incomeList" class="empty">아직 기록이 없습니다.</div></div>
-  </section>
-
-  <section id="estateScreen" class="screen">
-    <div class="title">부동산</div>
-    <div class="money" id="estateTotal">0원</div>
-    <div class="card"><div class="card-title">부동산 기록</div><div id="estateList" class="empty">아직 기록이 없습니다.</div></div>
-  </section>
-
-  <section id="statsScreen" class="screen">
-    <div class="title">통계</div>
-    <div class="card">
-      <div class="card-title">월간 요약</div>
-      <div class="stat-row"><span>지출</span><strong id="statExpense">0원</strong></div>
-      <div class="stat-row"><span>수입</span><strong id="statIncome">0원</strong></div>
-      <div class="stat-row"><span>부동산 순액</span><strong id="statEstate">0원</strong></div>
-      <div class="stat-row"><span>남은 금액</span><strong id="statRemain">0원</strong></div>
-    </div>
-    <div class="card"><div class="card-title">분류별 지출</div><div id="categoryStats" class="empty">아직 기록이 없습니다.</div></div>
-    <div class="card">
-      <div class="card-title">데이터 관리</div>
-      <button class="setting-btn" onclick="backupData()">JSON 백업 다운로드</button>
-      <button class="setting-btn" onclick="document.getElementById('restoreFile').click()">JSON 복원하기</button>
-      <input id="restoreFile" type="file" accept="application/json" style="display:none" onchange="restoreData(event)">
-      <button class="setting-btn danger" onclick="clearData()">전체 삭제</button>
-    </div>
-  </section>
+<div class="card">
+  <div id="status">로그인 전</div>
 </div>
 
-<button class="fab" onclick="openSheet()">+</button>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-<div class="bottom-nav">
-  <button class="nav-btn active" onclick="goTab('expense')">지출</button>
-  <button class="nav-btn" onclick="goTab('income')">수입</button>
-  <button class="nav-btn" onclick="goTab('estate')">부동산</button>
-  <button class="nav-btn" onclick="goTab('stats')">통계</button>
-</div>
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-<div class="sheet-bg" id="sheetBg" onclick="closeAllSheets()"></div>
-
-<div class="sheet" id="sheet">
-  <div class="handle"></div>
-  <div class="form-title" id="formTitle">기록 추가</div>
-
-  <div class="type-row">
-    <button class="type-btn active" data-type="expense">지출</button>
-    <button class="type-btn" data-type="income">수입</button>
-    <button class="type-btn" data-type="estate">부동산</button>
-  </div>
-
-  <input id="recordDate" type="date" />
-  <input id="amount" type="number" placeholder="금액" inputmode="numeric" />
-
-  <div class="select" id="categorySelect">
-    <div class="select-head" onclick="toggleSelect()">
-      <span id="categoryText">식비</span>
-      <span class="chev">⌄</span>
-    </div>
-    <div class="options" id="options"></div>
-  </div>
-
-  <input id="memo" class="memo" type="text" placeholder="메모" />
-
-  <button class="save" id="saveBtn" onclick="saveRecord()">저장하기</button>
-  <button class="cancel-edit" id="cancelEditBtn" onclick="cancelEdit()">수정 취소</button>
-</div>
-
-<div class="action-sheet" id="actionSheet">
-  <div class="handle"></div>
-  <div class="action-title" id="actionTitle">기록 관리</div>
-  <button class="action-btn" onclick="editSelected()">수정</button>
-  <button class="action-btn danger" onclick="deleteSelected()">삭제</button>
-  <button class="action-btn" onclick="closeAllSheets()">닫기</button>
-</div>
-
-<script>
-const categories = {
-  expense:["식비","카페","교통","쇼핑","데이트","취미","주거","의료","업무","기타"],
-  income:["월급","상여","부수입","기타"],
-  estate:["월세 입금","관리비","수선비","세금","대출이자","기타"]
+const firebaseConfig = {
+  apiKey: "AIzaSyCSVIFQy4izTG62HelbHNGh7MaV_gpdNHM",
+  authDomain: "money-log-f1bfc.firebaseapp.com",
+  projectId: "money-log-f1bfc",
+  storageBucket: "money-log-f1bfc.firebasestorage.app",
+  messagingSenderId: "212358025563",
+  appId: "1:212358025563:web:e03df1f2d75a58f4144a7e"
 };
 
-let currentTab = "expense";
-let currentType = "expense";
-let currentCategory = "식비";
-let editingId = null;
-let selectedId = null;
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
 
-let records = JSON.parse(localStorage.getItem("moneyRecords") || "[]");
+document.getElementById("loginBtn").onclick = async () => {
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (err) {
+    document.getElementById("status").innerText = "로그인 실패: " + err.message;
+  }
+};
 
-let viewDate = new Date();
-viewDate.setDate(1);
-
-function ym() {
-  return `${viewDate.getFullYear()}-${String(viewDate.getMonth()+1).padStart(2,"0")}`;
-}
-
-function today() {
-  return new Date().toISOString().slice(0,10);
-}
-
-function money(n) {
-  return Number(n).toLocaleString("ko-KR") + "원";
-}
-
-function saveLocal() {
-  localStorage.setItem("moneyRecords", JSON.stringify(records));
-}
-
-function monthLabel() {
-  document.getElementById("monthLabel").textContent = `${viewDate.getFullYear()}년 ${viewDate.getMonth()+1}월`;
-}
-
-function moveMonth(n) {
-  viewDate.setMonth(viewDate.getMonth()+n);
-  render();
-}
-
-function goTab(tab) {
-  currentTab = tab;
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(tab+"Screen").classList.add("active");
-
-  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-  document.querySelectorAll(".nav-btn")[["expense","income","estate","stats"].indexOf(tab)].classList.add("active");
-}
-
-function openSheet(record=null) {
-  closeActionOnly();
-
-  if (record) {
-    editingId = record.id;
-    document.getElementById("formTitle").textContent = "기록 수정";
-    document.getElementById("saveBtn").textContent = "수정 완료";
-    document.getElementById("cancelEditBtn").style.display = "block";
-
-    setType(record.type);
-    pickCategory(record.category);
-    document.getElementById("recordDate").value = record.date;
-    document.getElementById("amount").value = record.amount;
-    document.getElementById("memo").value = record.memo || "";
-  } else {
-    editingId = null;
-    document.getElementById("formTitle").textContent = "기록 추가";
-    document.getElementById("saveBtn").textContent = "저장하기";
-    document.getElementById("cancelEditBtn").style.display = "none";
-
-    setType(currentTab === "stats" ? "expense" : currentTab);
-    document.getElementById("recordDate").value = today();
-    document.getElementById("amount").value = "";
-    document.getElementById("memo").value = "";
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    document.getElementById("status").innerText = "로그인 전";
+    return;
   }
 
-  document.getElementById("sheetBg").classList.add("show");
-  document.getElementById("sheet").classList.add("show");
-  setTimeout(() => document.getElementById("amount").focus(), 250);
-}
+  document.getElementById("status").innerText =
+    "로그인 성공: " + user.email + "\nFirestore 저장 테스트 중...";
 
-function closeSheetOnly() {
-  document.getElementById("sheet").classList.remove("show");
-  document.getElementById("categorySelect").classList.remove("open");
-}
+  const ref = doc(db, "users", user.uid, "test", "connection");
 
-function closeActionOnly() {
-  document.getElementById("actionSheet").classList.remove("show");
-}
+  await setDoc(ref, {
+    message: "Firebase 연결 성공",
+    email: user.email,
+    time: new Date().toISOString()
+  });
 
-function closeAllSheets() {
-  closeSheetOnly();
-  closeActionOnly();
-  document.getElementById("sheetBg").classList.remove("show");
-  selectedId = null;
-}
+  const snap = await getDoc(ref);
 
-function cancelEdit() {
-  editingId = null;
-  closeAllSheets();
-}
-
-document.querySelectorAll(".type-btn").forEach(btn => {
-  btn.addEventListener("click", () => setType(btn.dataset.type));
+  document.getElementById("status").innerText =
+    "로그인 성공: " + user.email + "\nFirestore 저장 성공\n" + JSON.stringify(snap.data(), null, 2);
 });
-
-function setType(type) {
-  currentType = type;
-  currentCategory = categories[type][0];
-  document.getElementById("categoryText").textContent = currentCategory;
-
-  document.querySelectorAll(".type-btn").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.type === type);
-  });
-
-  renderOptions();
-}
-
-function toggleSelect() {
-  document.getElementById("categorySelect").classList.toggle("open");
-}
-
-function renderOptions() {
-  document.getElementById("options").innerHTML = categories[currentType].map(c =>
-    `<div class="option" onclick="pickCategory('${c}')">${c}</div>`
-  ).join("");
-}
-
-function pickCategory(c) {
-  currentCategory = c;
-  document.getElementById("categoryText").textContent = c;
-  document.getElementById("categorySelect").classList.remove("open");
-}
-
-function saveRecord() {
-  const amount = Number(document.getElementById("amount").value);
-  const memo = document.getElementById("memo").value.trim();
-  const date = document.getElementById("recordDate").value || today();
-
-  if (!amount) return alert("금액을 입력하세요.");
-
-  const data = {
-    id: editingId || Date.now(),
-    type: currentType,
-    category: currentCategory,
-    amount,
-    memo,
-    date
-  };
-
-  if (editingId) {
-    const idx = records.findIndex(r => r.id === editingId);
-    if (idx !== -1) records[idx] = data;
-    editingId = null;
-  } else {
-    records.unshift(data);
-  }
-
-  saveLocal();
-  closeAllSheets();
-  render();
-  goTab(data.type);
-}
-
-function openActions(id) {
-  selectedId = id;
-  const r = records.find(x => x.id === id);
-  if (!r) return;
-
-  document.getElementById("actionTitle").textContent = `${r.memo || r.category} · ${money(r.amount)}`;
-  document.getElementById("sheetBg").classList.add("show");
-  document.getElementById("actionSheet").classList.add("show");
-}
-
-function editSelected() {
-  const r = records.find(x => x.id === selectedId);
-  if (!r) return;
-  openSheet(r);
-}
-
-function deleteSelected() {
-  const r = records.find(x => x.id === selectedId);
-  if (!r) return;
-
-  if (!confirm(`"${r.memo || r.category}" 기록을 삭제할까요?`)) return;
-
-  records = records.filter(x => x.id !== selectedId);
-  saveLocal();
-  closeAllSheets();
-  render();
-}
-
-function monthRecords(type) {
-  return records.filter(r => r.type === type && r.date.startsWith(ym()));
-}
-
-function total(type) {
-  return monthRecords(type).reduce((s,r) => s + Number(r.amount), 0);
-}
-
-function renderList(id, type) {
-  const el = document.getElementById(id);
-  const data = monthRecords(type).slice().sort((a,b) => b.date.localeCompare(a.date));
-
-  if (!data.length) {
-    el.className = "empty";
-    el.innerHTML = "아직 기록이 없습니다.";
-    return;
-  }
-
-  el.className = "";
-  el.innerHTML = data.map(r => {
-    const sign = type === "expense" ? "-" : "+";
-    const cls = type === "expense" ? "minus" : "plus";
-    return `
-      <div class="list-item">
-        <div>
-          <div class="item-main">${r.memo || r.category}</div>
-          <div class="item-sub">${r.date} · ${r.category}</div>
-        </div>
-        <div class="item-money ${cls}">${sign}${money(r.amount)}</div>
-        <button class="more-btn" onclick="openActions(${r.id})">⋯</button>
-      </div>
-    `;
-  }).join("");
-}
-
-function renderQuick() {
-  document.getElementById("quickGrid").innerHTML = categories.expense.slice(0,8).map(c =>
-    `<button class="quick" onclick="quickExpense('${c}')">${c}</button>`
-  ).join("");
-}
-
-function quickExpense(c) {
-  openSheet();
-  setType("expense");
-  pickCategory(c);
-}
-
-function renderCategoryStats() {
-  const el = document.getElementById("categoryStats");
-  const map = {};
-
-  monthRecords("expense").forEach(r => {
-    map[r.category] = (map[r.category] || 0) + Number(r.amount);
-  });
-
-  const arr = Object.entries(map).sort((a,b) => b[1]-a[1]);
-
-  if (!arr.length) {
-    el.className = "empty";
-    el.innerHTML = "아직 기록이 없습니다.";
-    return;
-  }
-
-  el.className = "";
-  el.innerHTML = arr.map(([cat,val]) => `
-    <div class="stat-row"><span>${cat}</span><strong>${money(val)}</strong></div>
-  `).join("");
-}
-
-function backupData() {
-  const data = { app:"money-log", savedAt:new Date().toISOString(), records };
-  const blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `money-log-backup-${today()}.json`;
-  a.click();
-
-  URL.revokeObjectURL(url);
-}
-
-function restoreData(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (!Array.isArray(data.records)) return alert("복원할 수 없는 파일입니다.");
-      if (!confirm("기존 데이터를 지우고 백업 데이터로 복원할까요?")) return;
-
-      records = data.records;
-      saveLocal();
-      render();
-      alert("복원 완료");
-    } catch {
-      alert("JSON 파일을 읽을 수 없습니다.");
-    }
-  };
-  reader.readAsText(file);
-}
-
-function clearData() {
-  if (!confirm("정말 전체 기록을 삭제할까요?")) return;
-  if (!confirm("되돌릴 수 없습니다. 백업은 했나요?")) return;
-
-  records = [];
-  localStorage.removeItem("moneyRecords");
-  render();
-}
-
-function render() {
-  monthLabel();
-
-  const e = total("expense");
-  const i = total("income");
-  const estate = total("estate");
-
-  document.getElementById("expenseTotal").textContent = money(e);
-  document.getElementById("incomeTotal").textContent = money(i);
-  document.getElementById("estateTotal").textContent = money(estate);
-
-  document.getElementById("statExpense").textContent = money(e);
-  document.getElementById("statIncome").textContent = money(i);
-  document.getElementById("statEstate").textContent = money(estate);
-  document.getElementById("statRemain").textContent = money(i + estate - e);
-
-  renderList("expenseList", "expense");
-  renderList("incomeList", "income");
-  renderList("estateList", "estate");
-  renderCategoryStats();
-  renderQuick();
-}
-
-renderOptions();
-render();
 </script>
 
 </body>
