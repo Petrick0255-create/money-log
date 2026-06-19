@@ -295,7 +295,9 @@ function renderRecordItem(r) {
   `;
 }
 
-document.addEventListener("click", async e => {
+let selectedActionRecord = null;
+
+document.addEventListener("click", e => {
   const btn = e.target.closest(".more-btn");
   if (!btn) return;
 
@@ -303,14 +305,35 @@ document.addEventListener("click", async e => {
   const record = records.find(r => Number(r.id) === id);
   if (!record) return;
 
-  const action = confirm(
-    `${record.memo || record.category}\n\n확인: 수정\n취소: 삭제`
-  );
+  selectedActionRecord = record;
 
-  if (action) {
-    openEntrySheet(record.type, record);
-    return;
-  }
+  document.getElementById("actionTitle").textContent =
+    `${record.memo || record.category} · ${money(record.amount)}`;
+
+  document.getElementById("actionOverlay").classList.remove("hidden");
+  document.getElementById("actionSheet").classList.remove("hidden");
+});
+
+function closeActionSheet() {
+  selectedActionRecord = null;
+  document.getElementById("actionOverlay").classList.add("hidden");
+  document.getElementById("actionSheet").classList.add("hidden");
+}
+
+document.getElementById("actionCancelBtn").addEventListener("click", closeActionSheet);
+document.getElementById("actionOverlay").addEventListener("click", closeActionSheet);
+
+document.getElementById("actionEditBtn").addEventListener("click", () => {
+  if (!selectedActionRecord) return;
+  const record = selectedActionRecord;
+  closeActionSheet();
+  openEntrySheet(record.type, record);
+});
+
+document.getElementById("actionDeleteBtn").addEventListener("click", async () => {
+  if (!selectedActionRecord) return;
+
+  const record = selectedActionRecord;
 
   if (!confirm(`"${record.memo || record.category}" 기록을 삭제할까요?`)) return;
 
@@ -318,6 +341,7 @@ document.addEventListener("click", async e => {
     setSync("삭제 중...");
     await deleteDoc(recordRef(record.id));
     setSync("삭제 완료");
+    closeActionSheet();
   } catch (error) {
     setSync("삭제 실패");
     alert("삭제 실패: " + error.message);

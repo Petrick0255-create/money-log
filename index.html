@@ -125,6 +125,18 @@
   <button id="entrySaveBtn" class="entry-save">기록 저장하기</button>
 </div>
 
+<div id="actionOverlay" class="entry-overlay hidden"></div>
+
+<div id="actionSheet" class="action-sheet hidden">
+  <div class="sheet-handle"></div>
+  <div id="actionTitle" class="action-title">기록 관리</div>
+
+  <button id="actionEditBtn" class="action-btn">수정</button>
+  <button id="actionDeleteBtn" class="action-btn danger-btn">삭제</button>
+  <button id="actionCancelBtn" class="action-btn">취소</button>
+</div>
+
+
 <script type="module" src="firebase.js"></script>
 <script type="module" src="calendar.js"></script>
 <script type="module" src="app.js"></script>
